@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -25,7 +26,7 @@ func main() {
 			break
 		}
 
-		// Split the input into two parts: the left operand and the right operand
+		// Split the input into two parts: the left operand, operator and the right operand
 		parts := strings.Split(text, " ")
 		if len(parts) != 3 {
 			fmt.Println("Invalid input. Try again.")
@@ -45,18 +46,9 @@ func main() {
 		}
 
 		// Perform the calculation based on the operator
-		var result int
-		switch parts[1] {
-		case "+":
-			result = left + right
-		case "-":
-			result = left - right
-		case "*":
-			result = left * right
-		case "/":
-			result = left / right
-		default:
-			fmt.Println("Invalid operator. Try again.")
+		result, err := calculate(left, parts[1], right)
+		if err != nil {
+			fmt.Println(err)
 			continue
 		}
 
@@ -65,3 +57,20 @@ func main() {
 	}
 }
 
+func calculate(left int, operator string, right int) (int, error) {
+	switch operator {
+	case "+":
+		return left + right, nil
+	case "-":
+		return left - right, nil
+	case "*":
+		return left * right, nil
+	case "/":
+		if right == 0 {
+			return 0, errors.New("division by zero is not allowed")
+		}
+		return left / right, nil
+	default:
+		return 0, errors.New("invalid operator")
+	}
+}
